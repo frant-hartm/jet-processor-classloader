@@ -1,16 +1,16 @@
 package org.example.jet;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.jet.JetInstance;
 import com.hazelcast.jet.config.JobConfig;
-import com.hazelcast.jet.pipeline.BatchSource;
 import com.hazelcast.jet.pipeline.Pipeline;
 import com.hazelcast.jet.pipeline.Sinks;
+import com.hazelcast.jet.pipeline.StreamSource;
+import org.example.jet.hz3sources.HzSources;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -19,11 +19,24 @@ import java.net.URLClassLoader;
  * Hello world!
  *
  */
-public class App
+public class ClientToSubmit
 {
     public static ClassLoader classLoader;
     public static final String path1 = "file:////home/jara/devel/oss/jet-processor-classloader/jet-processor-classloader-v1/target/jet-processor-classloader-v1-1.0-SNAPSHOT.jar";
     public static final String path2 = "file:////home/jara/devel/oss/jet-processor-classloader/jet-processor-classloader-v2/target/jet-processor-classloader-v2-1.0-SNAPSHOT.jar";
+
+    private static final String SRC_CLIENT_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<hazelcast-client xmlns=\"http://www.hazelcast.com/schema/client-config\"\n"
+            + "                  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            + "                  xsi:schemaLocation=\"http://www.hazelcast.com/schema/client-config\n"
+            + "                  http://www.hazelcast.com/schema/client-config/hazelcast-client-config-3.12.xsd\">\n"
+            + "\n"
+            + "    <network>\n"
+            + "        <cluster-members>\n"
+            + "            <address>127.0.0.1:3120</address>\n"
+            + "        </cluster-members>\n"
+            + "    </network>\n"
+            + "</hazelcast-client>\n";
 
     static {
         try {
@@ -35,25 +48,13 @@ public class App
 
     public static void main( String[] args )
     {
+        StreamSource<Object> src = HzSources.hz3QueueSource(SRC_CLIENT_CONFIG, "myQueue");
         Pipeline p = Pipeline.create();
-        Class<?> dummySourceClass = null;
-        Object invoked = null;
-        try {
-            dummySourceClass = classLoader.loadClass("org.example.jet.DummySource");
-            Method sourceMethod = dummySourceClass.getMethod("source2");
-            invoked = sourceMethod.invoke(null);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        p.readFrom(src)
+                .withoutTimestamps()
+                .writeTo(HzSources.localClusterQueueSink("destination"));
 
-        assert dummySourceClass != null;
-        assert invoked != null;
-        System.out.println(dummySourceClass.getMethods().length);
-
-        p.readFrom((BatchSource) invoked)
-                .writeTo(Sinks.logger());
-
-        HazelcastInstance hz = Hazelcast.newHazelcastInstance(new Config().setClusterName("frantisek"));
+        HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
 //        ReplicatedMap<Object, String> replicatedMap = hz.getReplicatedMap("rmap");
         JetInstance jet = hz.getJetInstance();
