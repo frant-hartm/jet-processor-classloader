@@ -10,6 +10,7 @@ import com.hazelcast.jet.pipeline.Pipeline;
 import com.hazelcast.jet.pipeline.Sinks;
 import com.hazelcast.jet.pipeline.StreamSource;
 import org.example.jet.hz3sources.HzSources;
+import org.example.jet.queuesink.QueueSink;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,7 +55,7 @@ public class ClientToSubmit
         Pipeline p = Pipeline.create();
         p.readFrom(src)
                 .withoutTimestamps()
-                .writeTo(Sinks.logger());
+                .writeTo(QueueSink.localSink("dst"));
 
         HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
