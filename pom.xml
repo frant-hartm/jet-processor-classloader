@@ -14,6 +14,7 @@
         <module>jet-processor-classloader-v1</module>
         <module>jet-processor-classloader-v2</module>
         <module>jet-processor-classloader-test</module>
+        <module>jet-processor-classloader-hz3</module>
     </modules>
 
     <properties>
