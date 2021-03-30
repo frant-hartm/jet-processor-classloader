@@ -9,7 +9,7 @@ import org.example.jet.hz3context.Hz3Context;
 
 public final class HzSources {
     public static StreamSource<Object> hz3QueueSource(String remoteClusterXmlConfig, String queueName) {
-        return SourceBuilder.stream("my-source", c -> new Hz3Context(remoteClusterXmlConfig, queueName) )
+        return SourceBuilder.stream("source", c -> new Hz3Context(remoteClusterXmlConfig, queueName) )
                 .fillBufferFn((c, b) -> b.add(c.takeObject()))
                 .build();
     }

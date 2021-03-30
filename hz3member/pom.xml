@@ -4,21 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example.jet</groupId>
-    <artifactId>jet-processor-classloader</artifactId>
+    <parent>
+        <artifactId>jet-processor-classloader</artifactId>
+        <groupId>org.example.jet</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hz3member</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>jet-processor-classloader</name>
-    <packaging>pom</packaging>
-    <modules>
-        <module>jet-processor-classloader-v1</module>
-        <module>jet-processor-classloader-v2</module>
-        <module>jet-processor-classloader-test</module>
-        <module>hz3context</module>
-        <module>hz3sources</module>
-        <module>Member</module>
-        <module>hz3member</module>
-    </modules>
+    <name>hz3member</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,5 +21,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>3.12.11</version>
+        </dependency>
+    </dependencies>
 </project>

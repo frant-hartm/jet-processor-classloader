@@ -54,7 +54,7 @@ public class ClientToSubmit
         Pipeline p = Pipeline.create();
         p.readFrom(src)
                 .withoutTimestamps()
-                .writeTo(HzSources.localClusterQueueSink("destination"));
+                .writeTo(Sinks.logger());
 
         HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
@@ -66,7 +66,7 @@ public class ClientToSubmit
         jars.add("file:///home/jara/devel/oss/jet-processor-classloader/hz3context/target/hz3context-1.0-SNAPSHOT.jar");
         jars.add("file:///home/jara/.m2/repository/com/hazelcast/hazelcast/3.12.11/hazelcast-3.12.11.jar");
         jars.add("file:///home/jara/.m2/repository/com/hazelcast/hazelcast-client/3.12.11/hazelcast-client-3.12.11.jar");
-        config.addCustomClasspath("my-source", jars);
+        config.addCustomClasspath("source", jars);
         jet.newJob(p, config).join();
 
         hz.shutdown();

@@ -10,8 +10,10 @@ public class Hz3Context {
     private final IQueue<Object> queue;
 
     public Hz3Context(String clientConfig, String queueName) {
+        System.out.println("Hz3Context loaded by " + this.getClass().getClassLoader());
         this.clientConfig = clientConfig;
         this.client = HazelcastClient.newHazelcastClient(Utils.xmlToConfig(clientConfig));
+        System.out.println("Created client: " + client + " loaded by " + client.getClass().getClassLoader());
         this.queue = client.getQueue(queueName);
 
     }
