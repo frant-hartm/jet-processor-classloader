@@ -14,6 +14,8 @@ import org.example.jet.hz3sources.HzSources;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Hello world!
@@ -59,6 +61,12 @@ public class ClientToSubmit
 //        ReplicatedMap<Object, String> replicatedMap = hz.getReplicatedMap("rmap");
         JetInstance jet = hz.getJetInstance();
         JobConfig config = new JobConfig();
+        List<String> jars = new ArrayList<>();
+        jars.add("file:///home/jara/devel/oss/jet-processor-classloader/hz3sources/target/hz3sources-1.0-SNAPSHOT.jar");
+        jars.add("file:///home/jara/devel/oss/jet-processor-classloader/hz3context/target/hz3context-1.0-SNAPSHOT.jar");
+        jars.add("file:///home/jara/.m2/repository/com/hazelcast/hazelcast/3.12.11/hazelcast-3.12.11.jar");
+        jars.add("file:///home/jara/.m2/repository/com/hazelcast/hazelcast-client/3.12.11/hazelcast-client-3.12.11.jar");
+        config.addCustomClasspath("my-source", jars);
         jet.newJob(p, config).join();
 
         hz.shutdown();
